@@ -16,6 +16,10 @@ function TravellerRow(props) {
   return (
     <tr>
 	  {/*Q3. Placeholder for rendering one row of a table with required traveller attribute values.*/}
+      <td>{props.traveller.id}</td>
+      <td>{props.traveller.name}</td>
+      <td>{props.traveller.phone}</td>
+      <td>{props.traveller.bookingTime.toLocaleString()}</td>
     </tr>
   );
 }
@@ -37,6 +41,9 @@ function Display(props) {
       </thead>
       <tbody>
         {/*Q3. write code to call the JS variable defined at the top of this function to render table rows.*/}
+        {props.travellers.map(traveller => (
+          <TravellerRow key={traveller.id} traveller={traveller} />
+        ))}
       </tbody>
     </table>
   );
