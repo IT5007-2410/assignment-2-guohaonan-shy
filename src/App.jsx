@@ -52,19 +52,50 @@ function Display(props) {
 class Add extends React.Component {
   constructor() {
     super();
+    this.state = { name: '', phone: '' };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   handleSubmit(e) {
     e.preventDefault();
     /*Q4. Fetch the passenger details from the add form and call bookTraveller()*/
+    const { name, phone } = this.state;
+    const newTraveller = {
+      id: Date.now(), // Generate a unique ID
+      name,
+      phone,
+      bookingTime: new Date(),
+    };
+    this.props.bookTraveller(newTraveller);
+    this.setState({ name: '', phone: '' });
+    this.props.goToHomepage(); 
   }
 
   render() {
     return (
       <form name="addTraveller" onSubmit={this.handleSubmit}>
 	    {/*Q4. Placeholder to enter passenger details. Below code is just an example.*/}
-        <input type="text" name="travellername" placeholder="Name" />
+      <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          value={this.state.name}
+          onChange={this.handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="phone"
+          placeholder="Phone"
+          value={this.state.phone}
+          onChange={this.handleChange}
+          required
+        />
         <button>Add</button>
       </form>
     );
@@ -120,6 +151,7 @@ class TicketToRide extends React.Component {
     this.bookTraveller = this.bookTraveller.bind(this);
     this.deleteTraveller = this.deleteTraveller.bind(this);
     this.setSelector = this.setSelector.bind(this);
+    this.goToHomepage = this.goToHomepage.bind(this);  
   }
 
   setSelector(value)
@@ -139,11 +171,19 @@ class TicketToRide extends React.Component {
 
   bookTraveller(passenger) {
 	    /*Q4. Write code to add a passenger to the traveller state variable.*/
+      this.setState(prevState => ({
+        travellers: [...prevState.travellers, passenger],
+      }));
   }
 
   deleteTraveller(passenger) {
 	  /*Q5. Write code to delete a passenger from the traveller state variable.*/
   }
+
+  goToHomepage() {
+    this.setState({ selector: 1 });  // Set selector to 1 to render homepage
+  }
+
   render() {
     return (
       <div>
@@ -161,7 +201,7 @@ class TicketToRide extends React.Component {
           {/* Render components based on selected value */}
           {this.state.selector === 1 && <Homepage travellers={this.state.travellers}/>}
           {this.state.selector === 2 && <Display travellers={this.state.travellers} />}
-          {this.state.selector === 3 && <Add bookTraveller={this.bookTraveller} />}
+          {this.state.selector === 3 && <Add bookTraveller={this.bookTraveller} goToHomepage={this.goToHomepage} />}
           {this.state.selector === 4 && <Delete deleteTraveller={this.deleteTraveller} />}
         </div>
       </div>
