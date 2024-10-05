@@ -87,27 +87,38 @@ class Delete extends React.Component {
 }
 
 class Homepage extends React.Component {
-	constructor() {
-	super();
+	constructor(props) {
+	super(props);
+  this.state = {
+    totalSeats: 10, // Total number of seats
+    occupiedSeats: props.travellers.length, // Number of occupied seats from the props
+   };
 	}
 	render(){
+  const freeSeats = this.state.totalSeats - this.state.occupiedSeats;
 	return (
 	<div>
 		{/*Q2. Placeholder for Homepage code that shows free seats visually.*/}
+    <p>Free Seats: {freeSeats}</p>
 	</div>);
 	}
 }
 class TicketToRide extends React.Component {
   constructor() {
     super();
-    this.state = { travellers: [], selector: 1};
+    this.state = { 
+      travellers: initialTravellers, 
+      selector: 1
+    };
     this.bookTraveller = this.bookTraveller.bind(this);
     this.deleteTraveller = this.deleteTraveller.bind(this);
+    this.setSelector = this.setSelector.bind(this);
   }
 
   setSelector(value)
   {
   	/*Q2. Function to set the value of component selector variable based on user's button click.*/
+    this.setState({selector: value});
   }
   componentDidMount() {
     this.loadData();
@@ -130,17 +141,22 @@ class TicketToRide extends React.Component {
     return (
       <div>
         <h1>Ticket To Ride</h1>
-	<div>
-	    {/*Q2. Code for Navigation bar. Use basic buttons to create a nav bar. Use states to manage selection.*/}
-	</div>
-	<div>
-		{/*Only one of the below four divisions is rendered based on the button clicked by the user.*/}
-		{/*Q2 and Q6. Code to call Instance that draws Homepage. Homepage shows Visual Representation of free seats.*/}
-		{/*Q3. Code to call component that Displays Travellers.*/}
-		
-		{/*Q4. Code to call the component that adds a traveller.*/}
-		{/*Q5. Code to call the component that deletes a traveller based on a given attribute.*/}
-	</div>
+        {/* Only show the navigation buttons if the selector is not '3' */}
+        {this.state.selector !== 3 && (
+          <div>
+            <button onClick={() => this.setSelector(1)}>Homepage</button>
+            <button onClick={() => this.setSelector(2)}>Display Travellers</button>
+            <button onClick={() => this.setSelector(3)}>Add Traveller</button>
+            <button onClick={() => this.setSelector(4)}>Delete Traveller</button>
+          </div>
+        )}
+        <div>
+          {/* Render components based on selected value */}
+          {this.state.selector === 1 && <Homepage travellers={this.state.travellers}/>}
+          {this.state.selector === 2 && <Display travellers={this.state.travellers} />}
+          {this.state.selector === 3 && <Add bookTraveller={this.bookTraveller} />}
+          {this.state.selector === 4 && <Delete deleteTraveller={this.deleteTraveller} />}
+        </div>
       </div>
     );
   }
