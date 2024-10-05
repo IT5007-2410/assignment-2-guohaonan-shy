@@ -106,18 +106,34 @@ class Add extends React.Component {
 class Delete extends React.Component {
   constructor() {
     super();
+    this.state = { name: '' };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
   handleSubmit(e) {
     e.preventDefault();
     /*Q5. Fetch the passenger details from the deletion form and call deleteTraveller()*/
+    this.props.deleteTraveller(this.state.name);
+    this.setState({ name: '' });
+    this.props.goToHomepage(); 
+  }
+
+  handleChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   render() {
     return (
       <form name="deleteTraveller" onSubmit={this.handleSubmit}>
 	    {/*Q5. Placeholder form to enter information on which passenger's ticket needs to be deleted. Below code is just an example.*/}
-	<input type="text" name="travellername" placeholder="Name" />
+        <input
+            type="text"
+            name="name"
+            placeholder="Name"
+            value={this.state.name}
+            onChange={this.handleChange}
+            required
+          />
         <button>Delete</button>
       </form>
     );
@@ -178,6 +194,20 @@ class TicketToRide extends React.Component {
 
   deleteTraveller(passenger) {
 	  /*Q5. Write code to delete a passenger from the traveller state variable.*/
+    const travellerIndex = this.state.travellers.findIndex(traveller => traveller.name === passenger);
+  
+    if (travellerIndex !== -1) {
+      // Make a copy of the array to avoid mutating state directly
+      const updatedTravellers = [...this.state.travellers];
+      
+      // Remove the traveller at the found index
+      updatedTravellers.splice(travellerIndex, 1);
+      
+      // Update the state with the modified travellers list
+      this.setState({ travellers: updatedTravellers });
+    } else {
+      alert(`Traveller:${passenger} not found`);
+    }
   }
 
   goToHomepage() {
@@ -202,7 +232,7 @@ class TicketToRide extends React.Component {
           {this.state.selector === 1 && <Homepage travellers={this.state.travellers}/>}
           {this.state.selector === 2 && <Display travellers={this.state.travellers} />}
           {this.state.selector === 3 && <Add bookTraveller={this.bookTraveller} goToHomepage={this.goToHomepage} />}
-          {this.state.selector === 4 && <Delete deleteTraveller={this.deleteTraveller} />}
+          {this.state.selector === 4 && <Delete deleteTraveller={this.deleteTraveller} goToHomepage={this.goToHomepage}/>}
         </div>
       </div>
     );
