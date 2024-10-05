@@ -10,6 +10,7 @@ const initialTravellers = [
   },
 ];
 
+const MAX_SEATS = 3;
 
 function TravellerRow(props) {
   {/*Q3. Placeholder to initialize local variable based on traveller prop.*/}
@@ -87,7 +88,7 @@ class Add extends React.Component {
           value={this.state.name}
           onChange={this.handleChange}
           required
-        />
+        /><br />
         <input
           type="text"
           name="phone"
@@ -95,8 +96,8 @@ class Add extends React.Component {
           value={this.state.phone}
           onChange={this.handleChange}
           required
-        />
-        <button>Add</button>
+        /><br />
+        <button className="button">Add</button>
       </form>
     );
   }
@@ -133,8 +134,8 @@ class Delete extends React.Component {
             value={this.state.name}
             onChange={this.handleChange}
             required
-          />
-        <button>Delete</button>
+          /><br />
+        <button className="button">Delete</button>
       </form>
     );
   }
@@ -144,16 +145,38 @@ class Homepage extends React.Component {
 	constructor(props) {
 	super(props);
   this.state = {
-    totalSeats: 10, // Total number of seats
+    totalSeats: MAX_SEATS, // Total number of seats
     occupiedSeats: props.travellers.length, // Number of occupied seats from the props
    };
 	}
 	render(){
-  const freeSeats = this.state.totalSeats - this.state.occupiedSeats;
+  const totalSeats =this.state.totalSeats;
+  const reservedSeats = this.state.occupiedSeats;
+  const freeSeats = totalSeats - reservedSeats;
+
+  const seats = Array(totalSeats).fill(null).map((_, index) => {
+    // If the index is less than the number of reserved seats, the seat is reserved
+    const isReserved = index < reservedSeats;
+    return (
+      <div
+        key={index}
+        className={`seat ${isReserved ? 'reserved' : 'free'}`}
+      />
+    );
+  });
+
 	return (
 	<div>
 		{/*Q2. Placeholder for Homepage code that shows free seats visually.*/}
-    <p>Free Seats: {freeSeats}</p>
+    <p className ="free-seats">Free Seats: {freeSeats}</p>
+    <h2>Available Seats</h2>
+    <div className="seat-container">
+      {seats}
+    </div>
+    <div>
+      <span className="legend free"></span> Free Seats<br />
+      <span className="legend reserved"></span> Reserved Seats
+    </div>
 	</div>);
 	}
 }
@@ -187,6 +210,11 @@ class TicketToRide extends React.Component {
 
   bookTraveller(passenger) {
 	    /*Q4. Write code to add a passenger to the traveller state variable.*/
+      // Check if the number of reserved seats has reached the limit
+      if (this.state.travellers.length >= MAX_SEATS) {
+        alert("All seats are full! Cannot add more travellers.");
+        return; // Stop further execution if seats are full
+      }
       this.setState(prevState => ({
         travellers: [...prevState.travellers, passenger],
       }));
@@ -220,11 +248,11 @@ class TicketToRide extends React.Component {
         <h1>Ticket To Ride</h1>
         {/* Only show the navigation buttons if the selector is not '3' */}
         {this.state.selector !== 3 && (
-          <div>
-            <button onClick={() => this.setSelector(1)}>Homepage</button>
-            <button onClick={() => this.setSelector(2)}>Display Travellers</button>
-            <button onClick={() => this.setSelector(3)}>Add Traveller</button>
-            <button onClick={() => this.setSelector(4)}>Delete Traveller</button>
+          <div className="button-container">
+            <button className="button" onClick={() => this.setSelector(1)}>Homepage</button>
+            <button className="button" onClick={() => this.setSelector(2)}>Display Travellers</button>
+            <button className="button" onClick={() => this.setSelector(3)}>Add Traveller</button>
+            <button className="button" onClick={() => this.setSelector(4)}>Delete Traveller</button>
           </div>
         )}
         <div>
